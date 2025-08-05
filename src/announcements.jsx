@@ -13,7 +13,7 @@ function AnnouncementForm() {
     try {
       const token = localStorage.getItem('adminToken');
 
-      const res = await fetch('http://localhost:3000/api/announcement', {
+      const res = await fetch('https://scout-backend-yuyg.onrender.com/api/announcement', {
         method: 'POST',
         credentials: 'include', // Include cookies
         headers: {
