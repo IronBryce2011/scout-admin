@@ -5,7 +5,7 @@ import axios from 'axios';
 function AnnouncementForm() {
   const [content, setContent] = useState('');
   const [message, setMessage] = useState('');
-
+axios.defaults.withCredentials = true
   const submitAnnouncement = async () => {
     if (!content.trim()) {
       setMessage('Announcement cannot be empty');
