@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import axios from 'axios';  
-
 
 function AnnouncementForm() {
   const [content, setContent] = useState('');
   const [message, setMessage] = useState('');
-axios.defaults.withCredentials = true
+
   const submitAnnouncement = async () => {
     if (!content.trim()) {
       setMessage('Announcement cannot be empty');
@@ -13,21 +11,28 @@ axios.defaults.withCredentials = true
     }
 
     try {
-      const token = localStorage.getItem('adminToken'); // or wherever you store your admin token
+      const token = localStorage.getItem('adminToken');
 
-      const res = await axios.post(
-        'http://localhost:3000/api/announcement',
-        { content },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        }
-      );
+      const res = await fetch('http://localhost:3000/api/announcement', {
+        method: 'POST',
+        credentials: 'include', // Include cookies
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ content }),
+      });
 
-      setMessage(res.data.message);
-      setContent('');
+      const data = await res.json();
+
+      if (res.ok) {
+        setMessage(data.message || 'Announcement posted!');
+        setContent('');
+      } else {
+        setMessage(data.error || 'Error posting announcement');
+      }
     } catch (err) {
-      setMessage(err.response?.data?.error || 'Error posting announcement');
+      setMessage('Error posting announcement: ' + err.message);
     }
   };
 
@@ -40,12 +45,10 @@ axios.defaults.withCredentials = true
         value={content}
         onChange={(e) => setContent(e.target.value)}
       />
-      <button onClick={submitAnnouncement}>
-        Post Announcement
-      </button>
+      <button onClick={submitAnnouncement}>Post Announcement</button>
       {message && <p className={message.includes('error') ? 'error' : 'success'}>{message}</p>}
     </div>
   );
 }
 
-export default AnnouncementForm
+export default AnnouncementForm;
